@@ -1,12 +1,17 @@
 {
     "name": "react-animation-presets",
     "author": "Oberon Amsterdam",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/oberonamsterdam/react-animation-presets.git"
+    },
     "keywords": [
         "Oberon",
         "animation",
         "animations",
         "react"
     ],
+    "main": "lib/index.js",
     "description": "",
     "version": "0.1.0",
     "license": "MIT",
