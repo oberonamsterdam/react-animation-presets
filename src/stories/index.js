@@ -23,4 +23,4 @@ storiesOf('Images', module)
     ));
 
 storiesOf('Buttons', module)
-    .addWithJSX('Button', () => <Button>Click</Button>);
+    .addWithJSX('Button', () => <Button>{text('label', 'Click me good!')}</Button>);
