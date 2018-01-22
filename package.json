@@ -23,7 +23,8 @@
         "build:flow": "flow-copy-source -v src --ignore src/stories lib",
         "build:storybook": "build-storybook -c .storybook -o public",
         "test": "razzle test --env=jsdom",
-        "prepare": "npm run build"
+        "prepare": "npm run build",
+        "deploy-storybook": "storybook-to-ghpages"
     },
     "dependencies": {
         "express": "4.16.1",
