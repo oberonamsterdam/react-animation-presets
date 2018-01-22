@@ -6,8 +6,10 @@ import { storiesOf } from '@storybook/react';
 import { withKnobs, text, number } from '@storybook/addon-knobs/react';
 
 import ImageLoad from '../components/ImageLoad';
-import Button from '../components/Button';
+// import Button from '../components/Button';
 import LoadingText from '../components/LoadingText';
+
+import { Button } from '../index';
 
 storiesOf('Images', module)
     .addDecorator(withKnobs)
