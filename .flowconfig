@@ -1,0 +1,11 @@
+[ignore]
+node_modules
+
+[include]
+
+[libs]
+
+[options]
+exproposal.decorators=false
+
+[lints]
