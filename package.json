@@ -22,7 +22,8 @@
         "build:lib": "babel src --ignore src/stories --out-dir lib",
         "build:flow": "flow-copy-source -v src --ignore src/stories lib",
         "build:storybook": "build-storybook -c .storybook -o public",
-        "test": "razzle test --env=jsdom"
+        "test": "razzle test --env=jsdom",
+        "prepublish": "npm run build"
     },
     "dependencies": {
         "express": "4.16.1",
