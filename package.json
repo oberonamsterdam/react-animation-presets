@@ -13,7 +13,7 @@
     ],
     "main": "lib/index.js",
     "description": "",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "license": "MIT",
     "scripts": {
         "start": "start-storybook -p 3000",
@@ -64,5 +64,8 @@
             "oberon"
         ]
     },
-    "eslintIgnore": ["node_modules", "lib"]
+    "eslintIgnore": [
+        "node_modules",
+        "lib"
+    ]
 }
