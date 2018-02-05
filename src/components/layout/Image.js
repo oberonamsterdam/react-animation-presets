@@ -1,6 +1,6 @@
 // @flow
 
-import React, { SFC } from 'react';
+import React, { PureComponent } from 'react';
 import styled from 'styled-components';
 
 export type ImageProps = {
@@ -56,7 +56,7 @@ const Img = styled.img`
     transition: transform 1s ease-in-out;
 `;
 
-const Image: SFC = ({ src, src2x, ratio, alt, fill, onLoad, onError }) => {
+const Image = ({ src, src2x, ratio, alt, fill, onLoad, onError }) => {
     let image = null;
     let imageWrapper = null;
 
@@ -87,4 +87,16 @@ const Image: SFC = ({ src, src2x, ratio, alt, fill, onLoad, onError }) => {
     );
 };
 
-export default Image;
+const LoadProgress = (WrappedComponent) => {
+    return class Progress extends PureComponent {
+        componentDidMount () {
+            console.log('componentDidMount', this.props);
+        }
+
+        render () {
+            return <WrappedComponent {...this.props}/>;
+        }
+    };
+};
+
+export default LoadProgress(Image);
