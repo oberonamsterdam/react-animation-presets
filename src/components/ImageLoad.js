@@ -52,6 +52,30 @@ class ImageLoad extends PureComponent<Props, State> {
     mask: HTMLElement;
     timeline: TimelineLite;
 
+    render () {
+        const { src, src2x, alt, ratio = DEFAULTS.ratio, color = DEFAULTS.color } = this.props;
+        const { isLoading } = this.state;
+
+        return (
+            <ImageLoader>
+                <Image
+                    src={src}
+                    src2x={src2x}
+                    ratio={ratio}
+                    alt={alt}
+                    onLoad={this.onImageLoad}
+                    onError={this.onImageError}
+                    onProgress={this.onImageProgress}
+                />
+                <ImageMask
+                    innerRef={ref => { this.mask = ref; }}
+                    color={color}
+                />
+                {isLoading && <Loader />}
+            </ImageLoader>
+        );
+    }
+
     onImageLoad = (e) => {
         const { onLoad } = this.props;
         const { imageWrapper } = e;
@@ -72,27 +96,8 @@ class ImageLoad extends PureComponent<Props, State> {
         onError && onError(e);
     };
 
-    render () {
-        const { src, src2x, alt, ratio = DEFAULTS.ratio, color = DEFAULTS.color } = this.props;
-        const { isLoading } = this.state;
-
-        return (
-            <ImageLoader>
-                <Image
-                    src={src}
-                    src2x={src2x}
-                    ratio={ratio}
-                    alt={alt}
-                    onLoad={this.onImageLoad}
-                    onError={this.onImageError}
-                />
-                <ImageMask
-                    innerRef={ref => { this.mask = ref; }}
-                    color={color}
-                />
-                {isLoading && <Loader />}
-            </ImageLoader>
-        );
+    onImageProgress = (progress: number) => {
+        console.log('image progress', progress);
     }
 }
 
