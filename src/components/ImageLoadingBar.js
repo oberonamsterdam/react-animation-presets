@@ -51,6 +51,7 @@ class ImageLoad extends PureComponent<Props, State> {
         progress: 0
     };
 
+    loadingBar: HTMLElement;
     imageWrapper: HTMLElement;
     mask: HTMLElement;
     timeline: TimelineLite;
@@ -63,7 +64,10 @@ class ImageLoad extends PureComponent<Props, State> {
 
         return (
             <ImageLoader>
-                <LoadingBar progress={progress} onComplete={this.loadCompleteHandler} />
+                <LoadingBar
+                    progress={progress}
+                    onComplete={this.loadCompleteHandler}
+                />
                 <LoadingMask
                     innerRef={ref => { this.loadingMask = ref; }}
                     color={color}
@@ -93,23 +97,21 @@ class ImageLoad extends PureComponent<Props, State> {
             current: 0.001
         };
         if (!isLoading && this.loadAnimationComplete) {
-            let delay = 0.3;
-            this.timeline = new TimelineLite();
-            this.timeline.add(TweenLite.fromTo(this.loadingMask, 1.2, {scaleY: 0}, {scaleY: 1, ease: Circ.easeInOut}), delay);
+            let delay = 2;
+            this.timeline = new TimelineLite({
+                onUpdate: this.scaleUpdateHandler
+            });
+            this.timeline.timeScale(0.2);
+            this.timeline.add(TweenLite.fromTo(this.loadingMask, 1.2, {scaleY: 0.01}, {scaleY: 1, ease: Quad.easeInOut}), delay);
 
             delay += 0.2;
-            this.timeline.add(TweenLite.to(this.imageMask, 0.01, {scaleY: 0.001}), delay);
-            this.timeline.add(TweenLite.to(this.scaleObject, 1.2, {current: 1, ease: Circ.easeInOut, onUpdate: this.scaleUpdateHandler}), delay);
-            // this.timeline.add(TweenLite.fromTo(this.imageMask, 1.2, {scaleY: 0.001}, {scaleY: 1, ease: Circ.easeInOut}), delay);
-            // this.timeline.add(TweenLite.fromTo(this.imageWrapper, 1.2, {alpha: 0.5, scale: 1.2}, {scale: 1, ease: Circ.easeOut}), delay);
+            this.timeline.add(TweenLite.to(this.scaleObject, 1.2, {current: 1, ease: Quad.easeInOut}), delay);
         }
     }
 
     scaleUpdateHandler = () => {
-        // console.log(1 / this.scaleObject.current);
-
-        TweenLite.set(this.imageMask, {scaleY: this.scaleObject.current});
-        TweenLite.set(this.imageWrapper, {scaleY: 1 / this.scaleObject.current});
+        this.imageMask.style.transform = `scaleY(${this.scaleObject.current})`;
+        this.imageWrapper.style.transform = `scaleY(${1 / this.scaleObject.current})`;
     }
 
     imageLoadHandler = (e) => {
@@ -157,6 +159,7 @@ const LoadingMask = styled.figure`
 
 const ImageMask = styled.figure`
     position: relative;
+    overflow: hidden;
     display: block;
     top: 0;
     left: 0;

@@ -13,7 +13,7 @@ storiesOf('Images', module)
     .addDecorator(withKnobs)
     .addWithJSX('Imageload', () => (
         <ImageLoad
-            src={text('src', 'https://picsum.photos/3960/3540?random')}
+            src={text('src', 'https://picsum.photos/960/540?random')}
             src2x={text('src2x', 'https://picsum.photos/1920/1080?random')}
             alt={text('alt', 'Image alt text')}
             ratio={number('ratio', 16 / 9)}
@@ -24,7 +24,7 @@ storiesOf('Images', module)
     ))
     .addWithJSX('ImageloadingBar', () => (
         <ImageLoadingBar
-            src={text('src', 'https://picsum.photos/3960/3540?random')}
+            src={text('src', 'https://picsum.photos/960/540?random')}
             src2x={text('src2x', 'https://picsum.photos/1920/1080?random')}
             alt={text('alt', 'Image alt text')}
             ratio={number('ratio', 16 / 9)}
