@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Link, Route, Switch } from 'react-router-dom';
+import { Link, Route, Switch } from 'react-router-dom';
 import styled from 'styled-components';
 
 const PageOne = () => <StyledP>Page one</StyledP>;
@@ -56,21 +56,9 @@ const StyledP = styled.p`
     position: absolute;
     left: 50%;
     top: 50%;
-    color: blue;
+    color: #fff;
     font-family: sans-serif;
    text-shadow: 0 0 .5rem rgba(0,0,0,.2);
     font-size: 1.5rem;
     transform: translate(-50%);
 `;
-
-export const RouterLayout = (WrappedComponent) => {
-    return (
-        <BrowserRouter>
-            <Route render={({ location }) => (
-                <DemoLayout location={location}>
-                    <WrappedComponent test={'yoloswag'} />
-                </DemoLayout>
-            )}/>
-        </BrowserRouter>
-    );
-};

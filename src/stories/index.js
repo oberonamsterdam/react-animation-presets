@@ -1,18 +1,19 @@
 // @flow
-
 import React from 'react';
 
 import { storiesOf } from '@storybook/react';
-import { withKnobs, text, number } from '@storybook/addon-knobs/react';
+import { withKnobs, text, number, select, boolean, object } from '@storybook/addon-knobs/react';
 import { BrowserRouter, Route } from 'react-router-dom';
+import { withReadme } from 'storybook-readme';
+
+import transitionNotes from '../components/notes/transitionNotes.md';
 
 import ImageLoad from '../components/ImageLoad';
 import Button from '../components/Button';
-import { RouteSwitch, DemoLayout, RouterLayout } from '../components/router.demo';
+import { RouteSwitch, DemoLayout } from '../components/router.demo';
 import PageTransition from '../components/PageTransition';
 
 storiesOf('Images', module)
-    .addDecorator(withKnobs)
     .addWithJSX('Imageload', () => (
         <ImageLoad
             src={text('src', 'https://picsum.photos/960/540?random')}
@@ -33,26 +34,26 @@ storiesOf('Buttons', module)
     .addDecorator(withKnobs)
     .addWithJSX('Button', () => <Button>{text('label', 'Click me good!')}</Button>);
 
-storiesOf('PageTransitions', module)
+storiesOf('Page transition', module)
     .addDecorator(withKnobs)
-    .addDecorator(RouterLayout)
-    .addWithJSX('fade', (props) => (
-        <PageTransition animation={text('animation', 'fade')} backgroundColor={text('background-color', '#ddd')}>
-            <RouteSwitch test={props}/>
-        </PageTransition>
-    ));
-
-storiesOf('full transition test', module)
-    .addDecorator(withKnobs)
-    .addWithJSX('fade test', () => (
+    .addDecorator(withReadme(transitionNotes))
+    .addWithJSX('PageTransition', () => (
         <BrowserRouter>
             <Route render={({ location }) => (
                 <DemoLayout>
-                    <PageTransition>
+                    <PageTransition
+                        animation={select('animation', ['fade'], 'fade', 'transition')}
+                        backgroundColor={text('backgroundColor', '#ddd')}
+                        duration={object('duration', {
+                            in: 0.5,
+                            out: 0.3
+                        }, 'duration')}
+                        initialAnimation={boolean('initialAnimation', true)}
+                    >
                         <RouteSwitch location={location}/>
                     </PageTransition>
                 </DemoLayout>
-            )
-            }/>
+            )}/>
         </BrowserRouter>
-    ));
+    ))
+;
