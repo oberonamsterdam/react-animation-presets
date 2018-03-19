@@ -3,16 +3,27 @@
 import React from 'react';
 import styled from 'styled-components';
 
+type ButtonType = {
+    children: any,
+    borderSize?: string,
+    color?: string,
+    colorSecondary?: string
+};
+
+const Button = ({ borderSize = '1px', color = '#000', colorSecondary = '#fff', children }: ButtonType) => (
+    <ButtonContainer borderSize={borderSize} color={color} colorSecondary={colorSecondary}>
+        <span>{children}</span>
+    </ButtonContainer>
+);
+
 const ButtonContainer = styled.button`
     position: relative;
     cursor: pointer;
 
     padding: 1rem 2rem;
-    border: 0;
-    border-radius: 3px;
-    color: #fff;
-    background-color: #222;
-    box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.2);
+    border: ${props => props.borderSize} solid ${props => props.color};
+    color: ${props => props.color};
+    background-color: transparent;
 
     transition: color 0.3s ease-in-out, transform 0.1s ease-in-out;
 
@@ -30,17 +41,16 @@ const ButtonContainer = styled.button`
         left: 0;
         width: 100%;
         height: 100%;
-        transform-origin: left;
-        transform: scaleX(0);
-        background-color: #fff;
+        transform: scaleX(0) scaleY(1);
+        background-color: ${props => props.color};
         transition: transform 0.3s ease-in-out;
         content: '';
     }
 
     &:hover {
-        color: #222;
+        color: ${props => props.colorSecondary};
         &:before {
-            transform: scaleX(1);
+            transform: scaleX(1.2) scaleY(1.2);
         }
     }
 
@@ -48,11 +58,5 @@ const ButtonContainer = styled.button`
         transform: scale(0.95);
     }
 `;
-
-const Button = ({ children }) => (
-    <ButtonContainer>
-        <span>{children}</span>
-    </ButtonContainer>
-);
 
 export default Button;

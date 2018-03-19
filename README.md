@@ -1,5 +1,5 @@
-# Oberon animation presets
-Welcome to the Oberon animation presets project. This project will give an overview of reusable animations used within Oberon projects.
+# React animation presets
+Welcome to the React animation presets project. This project will give an overview of reusable animations used within Oberon projects.
 
 # Development setup
 - `npm install` to install dependencies
