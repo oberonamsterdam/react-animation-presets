@@ -32,7 +32,8 @@ storiesOf('Images', module)
 
 storiesOf('Buttons', module)
     .addDecorator(withKnobs)
-    .addWithJSX('Button', () => <Button>{text('label', 'Click me good!')}</Button>);
+    .addWithJSX('ClickDisappear', () => <Button type={'disappear'}>{text('label', 'Click disappear!')}</Button>)
+    .addWithJSX('ClickStay', () => <Button type={'stay'}>{text('label', 'Click stay!')}</Button>);
 
 storiesOf('Page transition', module)
     .addDecorator(withKnobs)
