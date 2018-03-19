@@ -1,22 +1,7 @@
 # React animation presets
-Welcome to the React animation presets project. This project will give an overview of reusable animations used within Oberon projects.
+Welcome to the React animation presets project. This project will give an overview of reusable animations used within react projects.
 
-# Development setup
-- `npm install` to install dependencies
-- `npm start` to run the project locally on localhost:3000
-- `npm run build` to create a build in the /public folder. This uses the configuration in side the /.storybook directory
+## Motivation
+The reason this package was created is because there are alot of animations that can be reused. So it would be meaningless to reïnvent the wheel everytime we want to create a default page transition or a button hover. This package will help developers to create those kind of animations quicker and easier.
 
-## Main focus:
-- Structured overview of different animations.
-- Each animation is a reusable component (preferably with customizable styles)
-
-## TODO's:
-- Setup example component structure
-- Add option to live edit the components
-- Export the components nicely
-- Create a few example animations
-
-## This project uses:
-- [Storybook](https://github.com/storybooks/storybook)
-- [Styled Components](https://www.styled-components.com/)
-- [GSAP](https://greensock.com/)
+More animations will be added to this package (checkout the [animation roadmap](animationRoadmap.md)) so it will be growing over time.
