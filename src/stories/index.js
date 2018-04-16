@@ -32,7 +32,9 @@ storiesOf('Images', module)
 
 storiesOf('Buttons', module)
     .addDecorator(withKnobs)
-    .addWithJSX('Button', () => <Button>{text('label', 'Click me good!')}</Button>);
+    .addWithJSX('Horizontal pass', () => (
+        <Button type={select('type', ['stay', 'disappear'], 'stay')}>{text('label', 'Click!')}</Button>
+    ));
 
 storiesOf('Page transition', module)
     .addDecorator(withKnobs)
@@ -55,5 +57,4 @@ storiesOf('Page transition', module)
                 </DemoLayout>
             )}/>
         </BrowserRouter>
-    ))
-;
+    ));

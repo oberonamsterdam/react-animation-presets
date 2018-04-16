@@ -1,62 +1,179 @@
 // @flow
 
-import React from 'react';
-import styled from 'styled-components';
+import { TimelineLite, TweenLite, linear, Quad } from 'gsap';
+import React, { PureComponent } from 'react';
+import styled, {css} from 'styled-components';
 
-type ButtonType = {
+type Props = {
     children: any,
     borderSize?: string,
     color?: string,
-    colorSecondary?: string
+    colorSecondary?: string,
+    type: string,
+    totalDuration: number,
+    width: string,
+    height: string
 };
 
-const Button = ({ borderSize = '1px', color = '#000', colorSecondary = '#fff', children }: ButtonType) => (
-    <ButtonContainer borderSize={borderSize} color={color} colorSecondary={colorSecondary}>
-        <span>{children}</span>
-    </ButtonContainer>
-);
+type State = {
+    isClicked: boolean
+};
+
+const DEFAULTS = {
+    color: 'rgb(0,0,0)',
+    colorSecondary: 'rgb(255,255,255)',
+    borderSize: 2,
+    totalDuration: 0.6,
+    width: '200px',
+    height: '50px'
+};
+
+class Button extends PureComponent<Props, State> {
+    hover: HTMLElement;
+    before: HTMLElement;
+    content: HTMLElement;
+    after: HTMLElement;
+    timeline: TimelineLite;
+
+    /*
+    * Todo:
+    *
+    * richting animatie
+    * refactoren naar horizontalPassButton
+    */
+
+    onButtonClick = () => {
+        const { totalDuration = DEFAULTS.totalDuration } = this.props;
+        this.timeline = new TimelineLite();
+        let delay = 0;
+        if (this.props.type === 'disappear') {
+            TweenLite.fromTo(this.before, totalDuration * 0.3, {x: '-100%', skewX: '0%'}, {x: '-10%', skewX: '-20%', ease: Quad.easeIn});
+            delay += totalDuration * 0.3;
+            this.timeline.add(TweenLite.fromTo(this.after, totalDuration * 0.4, {x: '-100%', skewX: '0%'}, {x: '-10%', skewX: '-20%', ease: Quad.easeIn}), delay);
+        }
+        if (this.props.type === 'stay') {
+            TweenLite.fromTo(this.before, totalDuration * 0.3, {x: '-100%', skewX: '0%'}, {x: '-10%', skewX: '-20%', ease: Quad.easeIn});
+            delay += totalDuration * 0.3;
+            this.timeline.add(TweenLite.fromTo(this.after, totalDuration * 0.4, {x: '-100%', skewX: '0%'}, {x: '-10%', skewX: '-20%', ease: Quad.easeIn}), delay);
+            delay += totalDuration * 0.4;
+            this.timeline.add(TweenLite.to(this.before, totalDuration * 0.3, {x: '100%', skewX: '0%', ease: Quad.easeOut}), delay);
+            this.timeline.add(TweenLite.to(this.after, totalDuration * 0.3, {x: '100%', skewX: '0%', ease: Quad.easeOut}), delay);
+        }
+        // this.timeline.timeScale(0.2);
+    };
+
+    onButtonHover = () => {
+        const { color = DEFAULTS.color, colorSecondary = DEFAULTS.colorSecondary, totalDuration = DEFAULTS.totalDuration } = this.props;
+        this.timeline = new TimelineLite();
+        let delay = 0;
+        this.timeline.add(TweenLite.fromTo(this.hover, totalDuration * 0.45, {x: '-100%', skewX: '0%'}, {x: '-10%', skewX: '-20%', ease: Quad.easeIn}), delay);
+        delay += totalDuration * 0.1;
+        this.timeline.add(TweenLite.fromTo(this.content, totalDuration * 0.1, {color: color}, {color: colorSecondary, ease: linear}), delay);
+        delay += totalDuration * 0.45;
+        this.timeline.add(TweenLite.to(this.hover, totalDuration * 0.45, {x: '100%', skewX: '0%', ease: Quad.easeOut}), delay);
+        this.timeline.add(TweenLite.to(this.content, totalDuration * 0.1, {color: color, ease: linear}), delay);
+
+        // this.timeline.timeScale(0.2);
+        return false;
+    };
+
+    render () {
+        const { borderSize = DEFAULTS.borderSize, color = DEFAULTS.color, colorSecondary = DEFAULTS.colorSecondary, children, width = DEFAULTS.width, height = DEFAULTS.height } = this.props;
+        return (
+            <ButtonContainer borderSize={borderSize} color={color} colorSecondary={colorSecondary} onClick={this.onButtonClick} onMouseEnter={this.onButtonHover} width={width} height={height}>
+                <Border
+                    color={color}
+                    colorSecondary={colorSecondary}
+                    borderSize={borderSize}
+                />
+                <Hover
+                    innerRef={ref => { this.hover = ref; }}
+                    color={color}
+                    colorSecondary={colorSecondary}
+                    borderSize={borderSize}
+                />
+                <Before
+                    innerRef={ref => { this.before = ref; }}
+                    color={color}
+                    colorSecondary={colorSecondary}
+                    borderSize={borderSize}
+                />
+                <Content
+                    innerRef={ref => { this.content = ref; }}
+                    color={color}
+                    colorSecondary={colorSecondary}
+                    borderSize={borderSize}
+                >
+                    <span>{children}</span>
+                </Content>
+                <After
+                    innerRef={ref => { this.after = ref; }}
+                    color={color}
+                    colorSecondary={colorSecondary}
+                />
+            </ButtonContainer>
+        );
+    }
+}
+
+const innerElement = css`
+    position: absolute;
+    display: block;
+    width: 120%;
+    height: 120%;
+    top: -10%;
+    left: 0;
+    margin: 0;
+    transform: translate(-100%,0px);
+`;
 
 const ButtonContainer = styled.button`
     position: relative;
     cursor: pointer;
-
-    padding: 1rem 2rem;
-    border: ${props => props.borderSize} solid ${props => props.color};
-    color: ${props => props.color};
     background-color: transparent;
-
-    transition: color 0.3s ease-in-out, transform 0.1s ease-in-out;
-
+    width: ${props => props.width};
+    height: ${props => props.height};
+    box-sizing: border-box;
     outline: none;
+    border: none;
+    overflow: hidden;
+`;
 
-    > span {
-        position: relative;
-        z-index: 1;
-    }
-    
-    &:before {
-        position: absolute;
-        display: block;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        transform: scaleX(0) scaleY(1);
-        background-color: ${props => props.color};
-        transition: transform 0.3s ease-in-out;
-        content: '';
-    }
+const Border = styled.div`
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: ${props => props.borderSize}px ${props => props.color} solid;
+    box-sizing: border-box;
+    top: 0;
+    left: 0;
+`;
 
-    &:hover {
-        color: ${props => props.colorSecondary};
-        &:before {
-            transform: scaleX(1.2) scaleY(1.2);
-        }
-    }
+const Content = styled.div`
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    line-height: 50px;
+    color: ${props => props.color};
+`;
 
-    &:active {
-        transform: scale(0.95);
-    }
+const Hover = styled.div`
+    ${innerElement};
+    background-color: ${props => props.color};
+    z-index:0;
+`;
+
+const Before = styled.div`
+    ${innerElement};
+    background-color: ${props => props.colorSecondary};
+`;
+
+const After = styled.div`
+    ${innerElement};
+    background-color: ${props => props.colorSecondary};
+    z-index:0;
 `;
 
 export default Button;
