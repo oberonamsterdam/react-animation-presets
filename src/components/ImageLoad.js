@@ -82,22 +82,27 @@ class ImageLoad extends PureComponent<Props, State> {
 
         let x = 0;
         let y = 0;
+        let transformOrigin = 'right';
 
         switch (direction) {
             case 'top':
                 y = 100;
+                transformOrigin = 'top';
                 break;
 
             case 'right':
                 x = -100;
+                transformOrigin = 'left';
                 break;
-
+                
             case 'bottom':
                 y = -100;
+                transformOrigin = 'bottom';
                 break;
-
+                
             case 'left':
                 x = 100;
+                transformOrigin = 'right';
                 break;
         }
 
@@ -105,7 +110,7 @@ class ImageLoad extends PureComponent<Props, State> {
             this.timeline = new TimelineLite();
             const delay = 0;
             this.timeline.add(TweenLite.to(this.mask, 0.6, {x: `${x}%`, y: `${y}%`, ease: Circ.easeInOut}), delay);
-            this.timeline.add(TweenLite.fromTo(imageWrapper, 1.2, {transformOrigin: direction, scale: 1.2}, {scale: 1, ease: Circ.easeOut}), delay);
+            this.timeline.add(TweenLite.fromTo(imageWrapper, 1.2, {transformOrigin, scale: 1.2}, {scale: 1, ease: Circ.easeOut}), delay);
         }
 
         this.setState({isLoading: false});
