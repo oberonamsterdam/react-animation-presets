@@ -22,7 +22,7 @@
 
 import { TimelineLite, TweenLite, Circ } from 'gsap';
 import React, { PureComponent } from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 import Image from './layout/Image';
 
 type Props = {
@@ -31,6 +31,7 @@ type Props = {
     alt?: string,
     ratio?: number,
     color?: string,
+    direction?: 'top' | 'right' | 'bottom' | 'left',
     onLoad?: () => void,
     onError?: () => void
 };
@@ -65,7 +66,6 @@ class ImageLoad extends PureComponent<Props, State> {
                     alt={alt}
                     onLoad={this.onImageLoad}
                     onError={this.onImageError}
-                    onProgress={this.onImageProgress}
                 />
                 <ImageMask
                     innerRef={ref => { this.mask = ref; }}
@@ -77,13 +77,35 @@ class ImageLoad extends PureComponent<Props, State> {
     }
 
     onImageLoad = (e) => {
-        const { onLoad } = this.props;
+        const { direction = DEFAULTS.direaction, onLoad } = this.props;
         const { imageWrapper } = e;
+
+        let x = 0;
+        let y = 0;
+
+        switch (direction) {
+            case 'top':
+                y = 100;
+                break;
+
+            case 'right':
+                x = 100;
+                break;
+
+            case 'bottom':
+                y = -100;
+                break;
+
+            case 'left':
+                x = -100;
+                break;
+        }
+
         if (imageWrapper) {
             this.timeline = new TimelineLite();
             const delay = 0;
-            this.timeline.add(TweenLite.fromTo(this.mask, 0.6, {x: '0%'}, {x: '-100%', ease: Circ.easeInOut}), delay);
-            this.timeline.add(TweenLite.fromTo(imageWrapper, 1.2, {transformOrigin: 'right', scale: 1.2}, {scale: 1, ease: Circ.easeOut}), delay);
+            this.timeline.add(TweenLite.to(this.mask, 0.6, {x: `${x}%`, y: `${y}%`, ease: Circ.easeInOut}), delay);
+            this.timeline.add(TweenLite.fromTo(imageWrapper, 1.2, {transformOrigin: direction, scale: 1.2}, {scale: 1, ease: Circ.easeOut}), delay);
         }
 
         this.setState({isLoading: false});
@@ -95,10 +117,6 @@ class ImageLoad extends PureComponent<Props, State> {
         this.setState({isLoading: false});
         onError && onError(e);
     };
-
-    onImageProgress = (progress: number) => {
-        console.log('image progress', progress);
-    }
 }
 
 const ImageLoader = styled.figure`
@@ -118,6 +136,7 @@ const ImageMask = styled.figure`
     height: 100%;
     margin: 0;
     background-color: ${({ color }: Props) => color};
+    transform: translate(0, 0);
 `;
 
 const LoaderAnimation = keyframes`

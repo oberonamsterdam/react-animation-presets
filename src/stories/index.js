@@ -10,7 +10,7 @@ import transitionNotes from '../components/notes/transitionNotes.md';
 
 import ImageLoad from '../components/ImageLoad';
 import ImageLoadingBar from '../components/ImageLoadingBar';
-import Button from '../components/Button';
+import HorizontalPassButton from '../components/HorizontalPassButton';
 import { RouteSwitch, DemoLayout } from '../components/router.demo';
 import PageTransition from '../components/PageTransition';
 
@@ -23,6 +23,7 @@ storiesOf('Images', module)
             alt={text('alt', 'Image alt text')}
             ratio={number('ratio', 16 / 9)}
             color={text('color', '#222')}
+            direction={select('direction', ['top', 'right', 'bottom', 'left'], 'left')}
             onLoad={() => {
                 console.log('onload');
             }}
@@ -53,7 +54,14 @@ storiesOf('Images', module)
 
 storiesOf('Buttons', module)
     .addDecorator(withKnobs)
-    .addWithJSX('Button', () => <Button>{text('label', 'Click me good!')}</Button>);
+    .addWithJSX('Horizontal pass', () => (
+        <HorizontalPassButton
+            type={select('type', ['stay', 'disappear'], 'stay')}
+            direction={select('direction', ['right', 'left'], 'right')}
+        >
+            {text('label', 'Click!')}
+        </HorizontalPassButton>
+    ));
 
 storiesOf('Page transition', module)
     .addDecorator(withKnobs)
@@ -76,5 +84,4 @@ storiesOf('Page transition', module)
                 </DemoLayout>
             )}/>
         </BrowserRouter>
-    ))
-;
+    ));
