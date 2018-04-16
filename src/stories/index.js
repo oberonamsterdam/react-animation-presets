@@ -32,8 +32,9 @@ storiesOf('Images', module)
 
 storiesOf('Buttons', module)
     .addDecorator(withKnobs)
-    .addWithJSX('ClickDisappear', () => <Button type={'disappear'}>{text('label', 'Click disappear!')}</Button>)
-    .addWithJSX('ClickStay', () => <Button type={'stay'}>{text('label', 'Click stay!')}</Button>);
+    .addWithJSX('Horizontal pass', () => (
+        <Button type={select('type', ['stay', 'disappear'], 'stay')}>{text('label', 'Click!')}</Button>
+    ));
 
 storiesOf('Page transition', module)
     .addDecorator(withKnobs)
@@ -56,5 +57,4 @@ storiesOf('Page transition', module)
                 </DemoLayout>
             )}/>
         </BrowserRouter>
-    ))
-;
+    ));
