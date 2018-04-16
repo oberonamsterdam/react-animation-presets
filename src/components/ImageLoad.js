@@ -22,7 +22,7 @@
 
 import { TimelineLite, TweenLite, Circ } from 'gsap';
 import React, { PureComponent } from 'react';
-import styled, { css, keyframes } from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import Image from './layout/Image';
 
 type Props = {
