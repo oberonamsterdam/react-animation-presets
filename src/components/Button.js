@@ -10,7 +10,9 @@ type Props = {
     color?: string,
     colorSecondary?: string,
     type: string,
-    totalDuration: number
+    totalDuration: number,
+    width: string,
+    height: string
 };
 
 type State = {
@@ -21,7 +23,9 @@ const DEFAULTS = {
     color: 'rgb(0,0,0)',
     colorSecondary: 'rgb(255,255,255)',
     borderSize: 2,
-    totalDuration: 0.9
+    totalDuration: 0.6,
+    width: '200px',
+    height: '50px'
 };
 
 class Button extends PureComponent<Props, State> {
@@ -31,44 +35,52 @@ class Button extends PureComponent<Props, State> {
     after: HTMLElement;
     timeline: TimelineLite;
 
+    /*
+    * Todo:
+    *
+    * richting animatie
+    * refactoren naar horizontalPassButton
+    */
+
     onButtonClick = () => {
         const { totalDuration = DEFAULTS.totalDuration } = this.props;
         this.timeline = new TimelineLite();
         let delay = 0;
         if (this.props.type === 'disappear') {
-            TweenLite.fromTo(this.before, totalDuration / 5, {x: '-100%', skewX: '0%'}, {x: '-10%', skewX: '-20%', ease: linear});
-            delay += totalDuration / 5;
-            this.timeline.add(TweenLite.fromTo(this.after, totalDuration / 3, {x: '-100%', skewX: '0%'}, {x: '-10%', skewX: '-20%', ease: linear}), delay);
+            TweenLite.fromTo(this.before, totalDuration * 0.3, {x: '-100%', skewX: '0%'}, {x: '-10%', skewX: '-20%', ease: Quad.easeIn});
+            delay += totalDuration * 0.3;
+            this.timeline.add(TweenLite.fromTo(this.after, totalDuration * 0.4, {x: '-100%', skewX: '0%'}, {x: '-10%', skewX: '-20%', ease: Quad.easeIn}), delay);
         }
         if (this.props.type === 'stay') {
-            TweenLite.fromTo(this.before, totalDuration / 5, {x: '-100%', skewX: '0%'}, {x: '-10%', skewX: '-20%', ease: linear});
-            delay += totalDuration / 5;
-            this.timeline.add(TweenLite.fromTo(this.after, totalDuration / 5, {x: '-100%', skewX: '0%'}, {x: '-10%', skewX: '-20%', ease: linear}), delay);
-            delay += totalDuration / 5;
-            this.timeline.add(TweenLite.to(this.before, totalDuration / 5, {x: '100%', skewX: '0%', ease: linear}), delay);
-            this.timeline.add(TweenLite.to(this.after, totalDuration / 5, {x: '100%', skewX: '0%', ease: linear}), delay);
+            TweenLite.fromTo(this.before, totalDuration * 0.3, {x: '-100%', skewX: '0%'}, {x: '-10%', skewX: '-20%', ease: Quad.easeIn});
+            delay += totalDuration * 0.3;
+            this.timeline.add(TweenLite.fromTo(this.after, totalDuration * 0.4, {x: '-100%', skewX: '0%'}, {x: '-10%', skewX: '-20%', ease: Quad.easeIn}), delay);
+            delay += totalDuration * 0.4;
+            this.timeline.add(TweenLite.to(this.before, totalDuration * 0.3, {x: '100%', skewX: '0%', ease: Quad.easeOut}), delay);
+            this.timeline.add(TweenLite.to(this.after, totalDuration * 0.3, {x: '100%', skewX: '0%', ease: Quad.easeOut}), delay);
         }
         // this.timeline.timeScale(0.2);
     };
 
-    onButtonHover = (e) => {
+    onButtonHover = () => {
         const { color = DEFAULTS.color, colorSecondary = DEFAULTS.colorSecondary, totalDuration = DEFAULTS.totalDuration } = this.props;
         this.timeline = new TimelineLite();
         let delay = 0;
-        this.timeline.add(TweenLite.fromTo(this.hover, totalDuration / 3, {x: '-100%', skewX: '0%'}, {x: '-10%', skewX: '-20%', ease: Quad.easeIn}), delay);
-        this.timeline.add(TweenLite.fromTo(this.content, totalDuration / 10, {color: color}, {color: colorSecondary, ease: linear}), delay);
-        delay += totalDuration / 3;
-        this.timeline.add(TweenLite.to(this.hover, totalDuration / 3, {x: '100%', skewX: '0%', ease: Quad.easeOut}), delay);
-        this.timeline.add(TweenLite.to(this.content, totalDuration / 10, {color: color, ease: linear}), delay);
+        this.timeline.add(TweenLite.fromTo(this.hover, totalDuration * 0.45, {x: '-100%', skewX: '0%'}, {x: '-10%', skewX: '-20%', ease: Quad.easeIn}), delay);
+        delay += totalDuration * 0.1;
+        this.timeline.add(TweenLite.fromTo(this.content, totalDuration * 0.1, {color: color}, {color: colorSecondary, ease: linear}), delay);
+        delay += totalDuration * 0.45;
+        this.timeline.add(TweenLite.to(this.hover, totalDuration * 0.45, {x: '100%', skewX: '0%', ease: Quad.easeOut}), delay);
+        this.timeline.add(TweenLite.to(this.content, totalDuration * 0.1, {color: color, ease: linear}), delay);
 
         // this.timeline.timeScale(0.2);
         return false;
     };
 
     render () {
-        const { borderSize = DEFAULTS.borderSize, color = DEFAULTS.color, colorSecondary = DEFAULTS.colorSecondary, children } = this.props;
+        const { borderSize = DEFAULTS.borderSize, color = DEFAULTS.color, colorSecondary = DEFAULTS.colorSecondary, children, width = DEFAULTS.width, height = DEFAULTS.height } = this.props;
         return (
-            <ButtonContainer borderSize={borderSize} color={color} colorSecondary={colorSecondary} onClick={this.onButtonClick} onMouseEnter={this.onButtonHover}>
+            <ButtonContainer borderSize={borderSize} color={color} colorSecondary={colorSecondary} onClick={this.onButtonClick} onMouseEnter={this.onButtonHover} width={width} height={height}>
                 <Border
                     color={color}
                     colorSecondary={colorSecondary}
@@ -119,8 +131,8 @@ const ButtonContainer = styled.button`
     position: relative;
     cursor: pointer;
     background-color: transparent;
-    width: 200px;
-    height:50px;
+    width: ${props => props.width};
+    height: ${props => props.height};
     box-sizing: border-box;
     outline: none;
     border: none;
