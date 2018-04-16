@@ -22,7 +22,7 @@
 
 import { TimelineLite, TweenLite, Circ, Quad } from 'gsap';
 import React, { PureComponent } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import Image from './layout/Image';
 
 type Props = {
@@ -31,8 +31,13 @@ type Props = {
     alt?: string,
     ratio?: number,
     color?: string,
+    direction?: 'top' | 'right' | 'bottom' | 'left',
     onLoad?: () => void,
-    onError?: () => void
+    onError?: () => void,
+
+    width?: string,
+    height?: string,
+    position?: 'top' | 'right' | 'bottom' | 'left' | 'center',
 };
 
 type State = {
@@ -42,7 +47,12 @@ type State = {
 
 const DEFAULTS = {
     ratio: 16 / 9,
-    color: '#EEEEEE'
+    direction: 'left',
+    color: '#EEEEEE',
+    
+    width: '100%',
+    height: '4px',
+    position: 'top'
 };
 
 class ImageLoad extends PureComponent<Props, State> {
@@ -59,21 +69,22 @@ class ImageLoad extends PureComponent<Props, State> {
     loadAnimationComplete: boolean;
 
     render () {
-        const { src, src2x, alt, ratio = DEFAULTS.ratio, color = DEFAULTS.color } = this.props;
+        const { src, src2x, alt, ratio = DEFAULTS.ratio, color = DEFAULTS.color, direction = DEFAULTS.direction, position = DEFAULTS.position, width = DEFAULTS.width, height = DEFAULTS.height } = this.props;
         const { progress } = this.state;
 
         return (
             <ImageLoader>
                 <LoadingBar
+                    width={width}
+                    height={height}
+                    color={color}
+                    position={position}
                     progress={progress}
                     onComplete={this.loadCompleteHandler}
                 />
-                <LoadingMask
-                    innerRef={ref => { this.loadingMask = ref; }}
-                    color={color}
-                />
                 <ImageMask
                     innerRef={ref => { this.imageMask = ref; }}
+                    direction={direction}
                     color={color}
                 >
                     <Image
@@ -93,25 +104,16 @@ class ImageLoad extends PureComponent<Props, State> {
     showImage = () => {
         const { isLoading } = this.state;
         this.setState({isLoading: false});
-        this.scaleObject = {
-            current: 0.001
-        };
+        const delay = 0;
+        this.timeline = new TimelineLite({
+            paused: true
+        });
+        this.timeline.add(TweenLite.to(this.imageMask, 0.6, {x: '0%', y: '0%', ease: Circ.easeInOut}), delay);
+        this.timeline.add(TweenLite.fromTo(this.imageWrapper, 1.2, {transformOrigin: 'right', scale: 1.2}, {scale: 1, ease: Circ.easeOut}), delay);
+
         if (!isLoading && this.loadAnimationComplete) {
-            let delay = 2;
-            this.timeline = new TimelineLite({
-                onUpdate: this.scaleUpdateHandler
-            });
-            this.timeline.timeScale(0.2);
-            this.timeline.add(TweenLite.fromTo(this.loadingMask, 1.2, {scaleY: 0.01}, {scaleY: 1, ease: Quad.easeInOut}), delay);
-
-            delay += 0.2;
-            this.timeline.add(TweenLite.to(this.scaleObject, 1.2, {current: 1, ease: Quad.easeInOut}), delay);
+            this.timeline.play();
         }
-    }
-
-    scaleUpdateHandler = () => {
-        this.imageMask.style.transform = `scaleY(${this.scaleObject.current})`;
-        this.imageWrapper.style.transform = `scaleY(${1 / this.scaleObject.current})`;
     }
 
     imageLoadHandler = (e) => {
@@ -145,17 +147,10 @@ const ImageLoader = styled.figure`
     margin: 0;
 `;
 
-const LoadingMask = styled.figure`
-    position: absolute;
-    display: block;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    transform: scaleY(0);
-    background-color: ${({ color }: Props) => color};
-`;
+const directionTop = css`transform: translate(0, -100%);`;
+const directionRight = css`transform: translate(100%, 0);`;
+const directionBottom = css`transform: translate(0, 100%);`;
+const directionLeft = css`transform: translate(-100%, 0);`;
 
 const ImageMask = styled.figure`
     position: relative;
@@ -166,12 +161,33 @@ const ImageMask = styled.figure`
     width: 100%;
     height: 100%;
     margin: 0;
-    transform: scaleY(0);
-    background-color: ${({ color }: Props) => '#ff0000' || color};
+    background-color: ${({ color }: Props) => color};
+    ${({ direction }: Props) => {
+        switch (direction) {
+            case 'top':
+                return directionTop;
+
+            case 'right':
+                return directionRight;
+
+            case 'bottom':
+                return directionBottom;
+
+            case 'left':
+                return directionLeft;
+
+            default:
+                return directionLeft;
+        }
+    }}
 `;
 
 /* START LoadingBar */
 type LoadingBarProps = {
+    position?: 'top' | 'right' | 'bottom' | 'left' | 'center',
+    width?: string,
+    height?: string,
+    color?: string,
     progress: number
 };
 class LoadingBar extends PureComponent<LoadingBarProps> {
@@ -179,9 +195,12 @@ class LoadingBar extends PureComponent<LoadingBarProps> {
 
     componentWillReceiveProps (newProps: LoadingBarProps) {
         if (this.progressBar) {
-            const { progress, onComplete } = newProps;
-            TweenLite.to(this.progressBar, 0.1, {
-                scaleX: progress,
+            const { position, progress, onComplete } = newProps;
+            const progressX = (position === 'top' || position === 'bottom') ? progress : 1;
+            const progressY = (position === 'right' || position === 'left') ? progress : 1;
+            TweenLite.to(this.progressBar, 0.3, {
+                scaleX: progressX,
+                scaleY: progressY,
                 ease: Quad.easeInOut,
                 onComplete: () => {
                     if (progress >= 1 && onComplete) {
@@ -193,22 +212,100 @@ class LoadingBar extends PureComponent<LoadingBarProps> {
     }
 
     render () {
+        const { position, width, height, color } = this.props;
         return (
-            <ProgressWrapper>
-                <ProgressBar innerRef={ref => { this.progressBar = ref; }} />
+            <ProgressWrapper
+                position={position}
+                width={width}
+                height={height}
+            >
+                <ProgressBar
+                    innerRef={ref => { this.progressBar = ref; }}
+                    position={position}
+                    color={color}
+                />
             </ProgressWrapper>
         );
     }
 }
 
-const ProgressWrapper = styled.div`
-    position: absolute;
+const wrapperPositionTop = css`
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, 0);
+`;
+
+const wrapperPositionRight = css`
+    top: 50%;
+    right: 0;
+    transform: translate(0, -50%);
+`;
+
+const wrapperPositionBottom = css`
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 0);
+`;
+
+const wrapperPositionLeft = css`
+    top: 50%;
+    left: 0;
+    transform: translate(0, -50%);
+`;
+
+const wrapperPositionCenter = css`
     top: 50%;
     left: 50%;
-    width: 50%;
-    height: 2px;
-    background-color: rgba(0, 0, 0, 0.2);
     transform: translate(-50%, -50%);
+`;
+
+const ProgressWrapper = styled.div`
+    position: absolute;
+    width: ${({ width }: Props) => width};
+    height: ${({ height }: Props) => height};
+    background-color: rgba(0, 0, 0, 0.2);
+
+    ${({ position }: Props) => {
+        switch (position) {
+            case 'top':
+                return wrapperPositionTop;
+
+            case 'right':
+                return wrapperPositionRight;
+
+            case 'bottom':
+                return wrapperPositionBottom;
+
+            case 'left':
+                return wrapperPositionLeft;
+
+            case 'center':
+                return wrapperPositionCenter;
+
+            default:
+                return wrapperPositionTop;
+        }
+    }}
+`;
+
+const barPositionTop = css`
+    transform-origin: left;
+    transform: scaleX(0);
+`;
+
+const barPositionRight = css`
+    transform-origin: top;
+    transform: scaleY(0);
+`;
+
+const barPositionBottom = css`
+    transform-origin: left;
+    transform: scaleX(0);
+`;
+
+const barPositionLeft = css`
+    transform-origin: top;
+    transform: scaleY(0);
 `;
 
 const ProgressBar = styled.div`
@@ -217,9 +314,26 @@ const ProgressBar = styled.div`
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #222222;
-    transform-origin: left;
-    transform: scaleX(0);
+    background-color: ${({ color }: Props) => color};
+
+    ${({ position }: Props) => {
+        switch (position) {
+            case 'top':
+                return barPositionTop;
+
+            case 'right':
+                return barPositionRight;
+
+            case 'bottom':
+                return barPositionBottom;
+
+            case 'left':
+                return barPositionLeft;
+
+            default:
+                return barPositionTop;
+        }
+    }}
 `;
 /* END LoadingBar */
 

@@ -15,6 +15,7 @@ import { RouteSwitch, DemoLayout } from '../components/router.demo';
 import PageTransition from '../components/PageTransition';
 
 storiesOf('Images', module)
+    .addDecorator(withKnobs)
     .addWithJSX('Imageload', () => (
         <ImageLoad
             src={text('src', 'https://picsum.photos/960/540?random')}
@@ -37,8 +38,16 @@ storiesOf('Images', module)
             alt={text('alt', 'Image alt text')}
             ratio={number('ratio', 16 / 9)}
             color={text('color', '#222')}
-            onLoad={() => { console.log('onload'); }}
-            onError={() => { console.log('onError'); }}
+            width={text('width', '100%')}
+            height={text('height', '4px')}
+            direction={select('direction', ['top', 'right', 'bottom', 'left'], 'left')}
+            position={select('position', ['top', 'right', 'bottom', 'left', 'center'], 'top')}
+            onLoad={() => {
+                console.log('onload');
+            }}
+            onError={() => {
+                console.log('onError');
+            }}
         />
     ));
 
