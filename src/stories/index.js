@@ -9,11 +9,13 @@ import { withReadme } from 'storybook-readme';
 import transitionNotes from '../components/notes/transitionNotes.md';
 
 import ImageLoad from '../components/ImageLoad';
-import Button from '../components/Button';
+import ImageLoadingBar from '../components/ImageLoadingBar';
+import HorizontalPassButton from '../components/HorizontalPassButton';
 import { RouteSwitch, DemoLayout } from '../components/router.demo';
 import PageTransition from '../components/PageTransition';
 
 storiesOf('Images', module)
+    .addDecorator(withKnobs)
     .addWithJSX('Imageload', () => (
         <ImageLoad
             src={text('src', 'https://picsum.photos/960/540?random')}
@@ -21,6 +23,26 @@ storiesOf('Images', module)
             alt={text('alt', 'Image alt text')}
             ratio={number('ratio', 16 / 9)}
             color={text('color', '#222')}
+            direction={select('direction', ['top', 'right', 'bottom', 'left'], 'left')}
+            onLoad={() => {
+                console.log('onload');
+            }}
+            onError={() => {
+                console.log('onError');
+            }}
+        />
+    ))
+    .addWithJSX('ImageloadingBar', () => (
+        <ImageLoadingBar
+            src={text('src', 'https://picsum.photos/960/540?random')}
+            src2x={text('src2x', 'https://picsum.photos/1920/1080?random')}
+            alt={text('alt', 'Image alt text')}
+            ratio={number('ratio', 16 / 9)}
+            color={text('color', '#222')}
+            width={text('width', '100%')}
+            height={text('height', '4px')}
+            direction={select('direction', ['top', 'right', 'bottom', 'left'], 'left')}
+            position={select('position', ['top', 'right', 'bottom', 'left', 'center'], 'top')}
             onLoad={() => {
                 console.log('onload');
             }}
@@ -32,7 +54,14 @@ storiesOf('Images', module)
 
 storiesOf('Buttons', module)
     .addDecorator(withKnobs)
-    .addWithJSX('Button', () => <Button>{text('label', 'Click me good!')}</Button>);
+    .addWithJSX('Horizontal pass', () => (
+        <HorizontalPassButton
+            type={select('type', ['stay', 'disappear'], 'stay')}
+            direction={select('direction', ['right', 'left'], 'right')}
+        >
+            {text('label', 'Click!')}
+        </HorizontalPassButton>
+    ));
 
 storiesOf('Page transition', module)
     .addDecorator(withKnobs)
@@ -55,5 +84,4 @@ storiesOf('Page transition', module)
                 </DemoLayout>
             )}/>
         </BrowserRouter>
-    ))
-;
+    ));

@@ -31,6 +31,7 @@ type Props = {
     alt?: string,
     ratio?: number,
     color?: string,
+    direction?: 'top' | 'right' | 'bottom' | 'left',
     onLoad?: () => void,
     onError?: () => void
 };
@@ -51,26 +52,6 @@ class ImageLoad extends PureComponent<Props, State> {
 
     mask: HTMLElement;
     timeline: TimelineLite;
-
-    onImageLoad = (e) => {
-        const { onLoad } = this.props;
-        const { imageWrapper } = e;
-        if (imageWrapper) {
-            this.timeline = new TimelineLite();
-            const delay = 0;
-            this.timeline.add(TweenLite.fromTo(this.mask, 0.6, {x: '0%'}, {x: '-100%', ease: Circ.easeInOut}), delay);
-            this.timeline.add(TweenLite.fromTo(imageWrapper, 1.2, {transformOrigin: 'right', scale: 1.2}, {scale: 1, ease: Circ.easeOut}), delay);
-        }
-
-        this.setState({isLoading: false});
-        onLoad && onLoad();
-    };
-
-    onImageError = (e) => {
-        const { onError } = this.props;
-        this.setState({isLoading: false});
-        onError && onError(e);
-    };
 
     render () {
         const { src, src2x, alt, ratio = DEFAULTS.ratio, color = DEFAULTS.color } = this.props;
@@ -94,6 +75,53 @@ class ImageLoad extends PureComponent<Props, State> {
             </ImageLoader>
         );
     }
+
+    onImageLoad = (e) => {
+        const { direction = DEFAULTS.direaction, onLoad } = this.props;
+        const { imageWrapper } = e;
+
+        let x = 0;
+        let y = 0;
+        let transformOrigin = 'right';
+
+        switch (direction) {
+            case 'top':
+                y = 100;
+                transformOrigin = 'top';
+                break;
+
+            case 'right':
+                x = -100;
+                transformOrigin = 'left';
+                break;
+                
+            case 'bottom':
+                y = -100;
+                transformOrigin = 'bottom';
+                break;
+                
+            case 'left':
+                x = 100;
+                transformOrigin = 'right';
+                break;
+        }
+
+        if (imageWrapper) {
+            this.timeline = new TimelineLite();
+            const delay = 0;
+            this.timeline.add(TweenLite.to(this.mask, 0.6, {x: `${x}%`, y: `${y}%`, ease: Circ.easeInOut}), delay);
+            this.timeline.add(TweenLite.fromTo(imageWrapper, 1.2, {transformOrigin, scale: 1.2}, {scale: 1, ease: Circ.easeOut}), delay);
+        }
+
+        this.setState({isLoading: false});
+        onLoad && onLoad();
+    };
+
+    onImageError = (e) => {
+        const { onError } = this.props;
+        this.setState({isLoading: false});
+        onError && onError(e);
+    };
 }
 
 const ImageLoader = styled.figure`
@@ -113,6 +141,7 @@ const ImageMask = styled.figure`
     height: 100%;
     margin: 0;
     background-color: ${({ color }: Props) => color};
+    transform: translate(0, 0);
 `;
 
 const LoaderAnimation = keyframes`
