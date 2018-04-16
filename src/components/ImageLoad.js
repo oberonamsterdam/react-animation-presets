@@ -89,7 +89,7 @@ class ImageLoad extends PureComponent<Props, State> {
                 break;
 
             case 'right':
-                x = 100;
+                x = -100;
                 break;
 
             case 'bottom':
@@ -97,7 +97,7 @@ class ImageLoad extends PureComponent<Props, State> {
                 break;
 
             case 'left':
-                x = -100;
+                x = 100;
                 break;
         }
 
