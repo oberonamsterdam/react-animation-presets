@@ -4,16 +4,16 @@
 
 - [ ] Pagetransitions
     - [x] Fade (base)
-    - [-] Slide (side, up) (base)
+    - [ ] Slide (side, up) (base)
     - [ ] Mask
     - [ ] with or without loader (seperate loader component)
 - [ ] Reveal animations
-    - [ ] Text (ala renvoye.com menu links) (base)
+    - [ ] Text (see renvoye.com menu links) (base)
     - [x] Image (base)
     - [ ] Sections
 - [ ] Preloader content 
-    - [ ] ala Facebook (base) (check idfa integration)
-    - [ ] ueno.co
+    - [ ] see Facebook (base) (check idfa integration)
+    - [ ] see ueno.co
 - [ ] Button
     - [x] text button (base)
     - [ ] icon button (base)
@@ -22,8 +22,8 @@
     - [ ] Reveal
     - [ ] Close
 - [ ] Scroll to next page
-    - [ ] ala muzli
-    - [ ] ala renvoye.com
+    - [ ] see muzli
+    - [ ] see renvoye.com
 - [ ] Form
     - [ ] input (base - text)
         - [ ] error
