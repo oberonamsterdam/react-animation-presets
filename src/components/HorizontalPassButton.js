@@ -9,10 +9,10 @@ type Props = {
     borderSize?: string,
     color?: string,
     colorSecondary?: string,
-    type: string,
-    totalDuration: number,
-    width: string,
-    height: string
+    type?: string,
+    totalDuration?: number,
+    width?: string,
+    height?: string
 };
 
 type State = {
@@ -20,6 +20,7 @@ type State = {
 };
 
 const DEFAULTS = {
+    direction: 'right',
     color: 'rgb(0,0,0)',
     colorSecondary: 'rgb(255,255,255)',
     borderSize: 2,
@@ -35,47 +36,45 @@ class Button extends PureComponent<Props, State> {
     after: HTMLElement;
     timeline: TimelineLite;
 
-    /*
-    * Todo:
-    *
-    * richting animatie
-    * refactoren naar horizontalPassButton
-    */
-
     onButtonClick = () => {
-        const { totalDuration = DEFAULTS.totalDuration } = this.props;
+        const { type = 'stay', totalDuration = DEFAULTS.totalDuration, direction = DEFAULTS.direction } = this.props;
         this.timeline = new TimelineLite();
         let delay = 0;
-        if (this.props.type === 'disappear') {
-            TweenLite.fromTo(this.before, totalDuration * 0.3, {x: '-100%', skewX: '0%'}, {x: '-10%', skewX: '-20%', ease: Quad.easeIn});
-            delay += totalDuration * 0.3;
-            this.timeline.add(TweenLite.fromTo(this.after, totalDuration * 0.4, {x: '-100%', skewX: '0%'}, {x: '-10%', skewX: '-20%', ease: Quad.easeIn}), delay);
+        const directionModifier = direction === 'right' ? 1 : -1;
+
+        switch (type) {
+            case 'disappear':
+                TweenLite.fromTo(this.before, totalDuration * 0.3, {x: `${100 * directionModifier}%`, skewX: '0%'}, {x: '-10%', skewX: '-20%', ease: Quad.easeIn});
+                delay += totalDuration * 0.3;
+                this.timeline.add(TweenLite.fromTo(this.after, totalDuration * 0.4, {x: `${-100 * directionModifier}%`, skewX: '0%'}, {x: '-10%', skewX: '-20%', ease: Quad.easeIn}), delay);
+                break;
+            
+            case 'stay':
+            default:
+                TweenLite.fromTo(this.before, totalDuration * 0.3, {x: `${-100 * directionModifier}%`, skewX: '0%'}, {x: '-10%', skewX: '-20%', ease: Quad.easeIn});
+                delay += totalDuration * 0.3;
+                this.timeline.add(TweenLite.fromTo(this.after, totalDuration * 0.4, {x: `${100 * directionModifier}%`, skewX: '0%'}, {x: '-10%', skewX: '-20%', ease: Quad.easeIn}), delay);
+                delay += totalDuration * 0.4;
+                this.timeline.add(TweenLite.to(this.before, totalDuration * 0.3, {x: `${100 * directionModifier}%`, skewX: '0%', ease: Quad.easeOut}), delay);
+                this.timeline.add(TweenLite.to(this.after, totalDuration * 0.3, {x: `${100 * directionModifier}%`, skewX: '0%', ease: Quad.easeOut}), delay);
+                break;
         }
-        if (this.props.type === 'stay') {
-            TweenLite.fromTo(this.before, totalDuration * 0.3, {x: '-100%', skewX: '0%'}, {x: '-10%', skewX: '-20%', ease: Quad.easeIn});
-            delay += totalDuration * 0.3;
-            this.timeline.add(TweenLite.fromTo(this.after, totalDuration * 0.4, {x: '-100%', skewX: '0%'}, {x: '-10%', skewX: '-20%', ease: Quad.easeIn}), delay);
-            delay += totalDuration * 0.4;
-            this.timeline.add(TweenLite.to(this.before, totalDuration * 0.3, {x: '100%', skewX: '0%', ease: Quad.easeOut}), delay);
-            this.timeline.add(TweenLite.to(this.after, totalDuration * 0.3, {x: '100%', skewX: '0%', ease: Quad.easeOut}), delay);
-        }
-        // this.timeline.timeScale(0.2);
-    };
+    }
 
     onButtonHover = () => {
-        const { color = DEFAULTS.color, colorSecondary = DEFAULTS.colorSecondary, totalDuration = DEFAULTS.totalDuration } = this.props;
+        const { color = DEFAULTS.color, colorSecondary = DEFAULTS.colorSecondary, totalDuration = DEFAULTS.totalDuration, direction = DEFAULTS.direction } = this.props;
+        
         this.timeline = new TimelineLite();
         let delay = 0;
-        this.timeline.add(TweenLite.fromTo(this.hover, totalDuration * 0.45, {x: '-100%', skewX: '0%'}, {x: '-10%', skewX: '-20%', ease: Quad.easeIn}), delay);
+        const directionModifier = direction === 'right' ? -1 : 1;
+
+        this.timeline.add(TweenLite.fromTo(this.hover, totalDuration * 0.45, {x: `${100 * directionModifier}%`, skewX: '0%'}, {x: '-10%', skewX: '-20%', ease: Quad.easeIn}), delay);
         delay += totalDuration * 0.1;
         this.timeline.add(TweenLite.fromTo(this.content, totalDuration * 0.1, {color: color}, {color: colorSecondary, ease: linear}), delay);
         delay += totalDuration * 0.45;
-        this.timeline.add(TweenLite.to(this.hover, totalDuration * 0.45, {x: '100%', skewX: '0%', ease: Quad.easeOut}), delay);
+        this.timeline.add(TweenLite.to(this.hover, totalDuration * 0.45, {x: `${-100 * directionModifier}%`, skewX: '0%', ease: Quad.easeOut}), delay);
         this.timeline.add(TweenLite.to(this.content, totalDuration * 0.1, {color: color, ease: linear}), delay);
-
-        // this.timeline.timeScale(0.2);
-        return false;
-    };
+    }
 
     render () {
         const { borderSize = DEFAULTS.borderSize, color = DEFAULTS.color, colorSecondary = DEFAULTS.colorSecondary, children, width = DEFAULTS.width, height = DEFAULTS.height } = this.props;

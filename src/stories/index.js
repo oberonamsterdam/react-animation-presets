@@ -9,7 +9,7 @@ import { withReadme } from 'storybook-readme';
 import transitionNotes from '../components/notes/transitionNotes.md';
 
 import ImageLoad from '../components/ImageLoad';
-import Button from '../components/Button';
+import HorizontalPassButton from '../components/HorizontalPassButton';
 import { RouteSwitch, DemoLayout } from '../components/router.demo';
 import PageTransition from '../components/PageTransition';
 
@@ -33,7 +33,12 @@ storiesOf('Images', module)
 storiesOf('Buttons', module)
     .addDecorator(withKnobs)
     .addWithJSX('Horizontal pass', () => (
-        <Button type={select('type', ['stay', 'disappear'], 'stay')}>{text('label', 'Click!')}</Button>
+        <HorizontalPassButton
+            type={select('type', ['stay', 'disappear'], 'stay')}
+            direction={select('direction', ['right', 'left'], 'right')}
+        >
+            {text('label', 'Click!')}
+        </HorizontalPassButton>
     ));
 
 storiesOf('Page transition', module)
