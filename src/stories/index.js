@@ -34,6 +34,9 @@ storiesOf('Buttons', module)
     .addDecorator(withKnobs)
     .addWithJSX('Horizontal pass', () => (
         <Button type={select('type', ['stay', 'disappear'], 'stay')}>{text('label', 'Click!')}</Button>
+    ))
+    .addWithJSX('Horizontal fill', () => (
+        <Button type={'fill'}>{text('label', 'Click!')}</Button>
     ));
 
 storiesOf('Page transition', module)
